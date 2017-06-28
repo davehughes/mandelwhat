@@ -6,10 +6,12 @@ it on the wall if I had some free time.
 
 ## Usage
 
+```sh
 > lein repl
 
 user=> (use 'mandelwhat.core)
 user=> (show-mandelbrot (mandelbrot-test))
+```
 
 ## License
 
