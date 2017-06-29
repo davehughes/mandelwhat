@@ -1,6 +1,8 @@
 (ns mandelwhat.core
   (:require [clojure.math.numeric-tower :as math]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [clojure.string]
+            ))
 
 (def MAX-DEPTH 100)
 
@@ -83,28 +85,28 @@
 (defn cast-complex-coefficients-to-float [c]
     {:real (float (c :real)) :imag (float (c :imag))})
 
-(defn mandelbrot-render [world-rect viewport-rect]
-  (map-coords
-    (fn [p]
-      (-> p
-        (translate-point viewport-rect world-rect)
-        point-to-complex
-        cast-complex-coefficients-to-float
-        mandelbrot
-        get-shade-for-depth))
-    (generate-coords (viewport-rect :w) (viewport-rect :h))))
+(defn mandelbrot-render
+  ([]
+   (mandelbrot-render {:x -2 :y -2 :w 4 :h 4}))
 
-(defn mandelbrot-test []
-  (mandelbrot-render {:x -2 :y -2 :w 4 :h 4} {:x 0 :y 0 :w 100 :h 60}))
+  ([world-rect]
+   (mandelbrot-render world-rect {:x 0 :y 0 :w 100 :h 60}))
+
+  ([world-rect viewport-rect]
+    (map-coords
+      (fn [p]
+        (-> p
+          (translate-point viewport-rect world-rect)
+          point-to-complex
+          cast-complex-coefficients-to-float
+          mandelbrot
+          get-shade-for-depth))
+      (generate-coords (viewport-rect :w) (viewport-rect :h)))))
+
 
 (defn show-mandelbrot [rows]
-  (let [row (first rows)
-        next-rows (rest rows)]
-    (if (empty? row)
-      nil
-      (do
-        (print (apply str row))
-        (println)
-        (show-mandelbrot next-rows)))))
+  (print (clojure.string/join "\n"
+            (map clojure.string/join rows))))
 
-; (show-mandelbrot (mandelbrot-test))t
+
+; (show-mandelbrot (mandelbrot-render))
